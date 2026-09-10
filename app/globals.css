@@ -1,0 +1,267 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    /* Offset anchor scrolling so sticky nav doesn't cover section headings */
+    scroll-padding-top: 88px;
+  }
+
+  /* Entrance animations slide in from the sides — never let that create a
+     horizontal scrollbar.
+     NOTE: must be `clip`, not `hidden`. `overflow-x: hidden` turns the root
+     into a scroll container, which breaks `position: sticky` (our pinned
+     sections) and stops scroll progress from being measured. `clip` crops
+     without creating a scroll container. */
+  html,
+  body {
+    overflow-x: clip;
+  }
+
+  body {
+    @apply bg-espresso text-cream font-garamond antialiased;
+    /* Layered warm base gradient painted behind everything */
+    background-color: #3c1201;
+    background-image:
+      radial-gradient(1200px 600px at 15% -5%, rgba(157, 71, 20, 0.35), transparent 60%),
+      radial-gradient(1000px 700px at 100% 10%, rgba(134, 43, 1, 0.4), transparent 55%),
+      linear-gradient(180deg, #3c1201 0%, #4a1601 45%, #3c1201 100%);
+    background-attachment: fixed;
+  }
+
+  /* Regal serif headings by default */
+  h1, h2, h3, h4 {
+    @apply font-cinzel text-cream;
+  }
+
+  ::selection {
+    background: rgba(224, 128, 54, 0.35);
+    color: #f7e6cf;
+  }
+
+  /* Accessible, on-brand focus rings */
+  :focus-visible {
+    outline: 2px solid #e08036;
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+@layer components {
+  .container-brand {
+    @apply mx-auto w-full max-w-content px-5 sm:px-8;
+  }
+
+  .eyebrow {
+    @apply font-inter text-xs sm:text-sm uppercase tracking-[0.28em] text-champagne/90;
+  }
+
+  /* Thin warm divider */
+  .hairline {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-champagne/30 to-transparent;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full
+      bg-gold-gradient px-7 py-3.5 font-inter text-sm font-bold uppercase
+      tracking-[0.12em] text-espresso shadow-gold
+      transition-transform duration-200 ease-out
+      hover:-translate-y-0.5 hover:scale-[1.02]
+      active:translate-y-0 active:scale-100;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full
+      border border-gold/70 bg-transparent px-7 py-3.5 font-inter text-sm
+      font-semibold uppercase tracking-[0.12em] text-champagne
+      transition-colors duration-200 ease-out
+      hover:border-champagne hover:text-cream;
+  }
+
+  .card-surface {
+    @apply rounded-brand border border-champagne/20 bg-rust/30 backdrop-blur-sm
+      shadow-warm;
+  }
+
+  /* Scroll-pinned sections: the stage sticks while the track scrolls past,
+     spending that distance dealing the cards in. Desktop only — on small
+     screens the content just flows normally. */
+  .pin-track {
+    height: auto;
+  }
+  .pin-stage {
+    display: flex;
+    align-items: center;
+    width: 100%;
+  }
+
+  @media (min-width: 768px) {
+    .pin-track {
+      height: var(--pin-h, 240vh);
+    }
+    .pin-stage {
+      position: sticky;
+      top: 0;
+      min-height: 100vh;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pin-track {
+      height: auto !important;
+    }
+    .pin-stage {
+      position: static !important;
+      min-height: 0 !important;
+    }
+  }
+}
+
+/* Respect reduced-motion: kill smooth scroll + transforms globally as a safety net */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* Keep the Calendly widget blended with the dark theme */
+.calendly-inline-widget {
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------
+   Hero motion: shimmering gold headline, rotating aura, scroll cue
+   --------------------------------------------------------------- */
+
+/* Liquid-gold sweep across the accent phrase */
+.shimmer-text {
+  background: linear-gradient(
+    100deg,
+    #e08036 18%,
+    #ffe7bd 40%,
+    #fff6e2 48%,
+    #f0b36a 56%,
+    #e08036 78%
+  );
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer-sweep 6s linear infinite;
+}
+
+@keyframes shimmer-sweep {
+  from {
+    background-position: 220% center;
+  }
+  to {
+    background-position: -20% center;
+  }
+}
+
+/* Hovering the glowing phrase blooms the glow and speeds the sweep up */
+.letters-hover .shimmer-text {
+  transition: filter 0.35s ease;
+}
+.letters-hover:hover .shimmer-text {
+  animation-duration: 1.8s;
+  filter: drop-shadow(0 0 16px rgba(240, 179, 106, 0.55))
+    drop-shadow(0 0 34px rgba(224, 128, 54, 0.35));
+}
+
+/* Slowly rotating conic halo behind the emblem */
+.hero-aura {
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    rgba(224, 128, 54, 0.42) 60deg,
+    transparent 140deg,
+    rgba(240, 179, 106, 0.34) 220deg,
+    transparent 300deg,
+    rgba(224, 128, 54, 0.3) 350deg,
+    transparent 360deg
+  );
+  filter: blur(30px);
+  animation: aura-spin 22s linear infinite;
+}
+
+@keyframes aura-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Breathing core glow */
+.hero-pulse {
+  animation: pulse-glow 5.5s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+/* Scroll cue line that travels downward */
+.scroll-line {
+  position: relative;
+  overflow: hidden;
+}
+.scroll-line::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: -60%;
+  height: 60%;
+  background: linear-gradient(to bottom, transparent, #f0b36a, transparent);
+  animation: scroll-travel 2.4s ease-in-out infinite;
+}
+
+@keyframes scroll-travel {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(260%);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer-text {
+    animation: none;
+    background: none;
+    -webkit-background-clip: initial;
+    background-clip: initial;
+    color: #e08036;
+  }
+  .hero-aura,
+  .hero-pulse,
+  .scroll-line::after {
+    animation: none;
+  }
+}
