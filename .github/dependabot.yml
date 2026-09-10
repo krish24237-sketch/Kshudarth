@@ -1,0 +1,20 @@
+# Opens one grouped pull request a month with safe (minor/patch) dependency
+# updates. Vercel builds a preview for each PR, so a broken update shows up as a
+# failed check instead of reaching the live site. Major upgrades are ignored
+# here because they need hands-on testing.
+#
+# Security fixes are separate: enable "Dependabot security updates" under the
+# repo's Settings -> Code security.
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 3
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]

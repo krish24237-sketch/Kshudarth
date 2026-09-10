@@ -1,7 +1,8 @@
 "use client";
 
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import type { ComponentType, ElementType, ReactNode } from "react";
+import { useReducedMotionSafe } from "./useReducedMotionSafe";
 
 /**
  * Cache one motion component per HTML tag so we don't recreate (and remount)
@@ -44,6 +45,10 @@ type MotionSectionProps = {
 /**
  * Section reveal: content glides in from the side (default: left), un-blurring
  * as it settles. Directional movement reads far more deliberate than a fade.
+ *
+ * The starting state never depends on reduced motion — it's rendered into the
+ * server HTML, so it must match on the client. Reduced motion is handled by a
+ * zero-duration transition instead.
  */
 export function MotionSection({
   children,
@@ -54,7 +59,7 @@ export function MotionSection({
   id,
   ...rest
 }: MotionSectionProps) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const MotionTag = getMotion(as);
   const { x, y } = offset(from, 56);
 
@@ -62,9 +67,7 @@ export function MotionSection({
     <MotionTag
       id={id}
       className={className}
-      initial={
-        reduce ? { opacity: 1 } : { opacity: 0, x, y, filter: "blur(12px)" }
-      }
+      initial={{ opacity: 0, x, y, filter: "blur(12px)" }}
       whileInView={{ opacity: 1, x: 0, y: 0, filter: "blur(0px)" }}
       viewport={{ once: true, margin: "0px 0px -90px 0px" }}
       transition={{
@@ -89,7 +92,7 @@ export function MotionStagger({
   id,
   ...rest
 }: MotionSectionProps) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const MotionTag = getMotion(as);
 
   const container: Variants = {
@@ -136,7 +139,7 @@ export function MotionItem({
   index?: number;
   from?: Direction;
 }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const MotionTag = getMotion(as);
 
   const dir: Direction = from ?? (index % 2 === 0 ? "left" : "right");
@@ -144,16 +147,14 @@ export function MotionItem({
   const turn = dir === "left" ? -7 : dir === "right" ? 7 : 0;
 
   const item: Variants = {
-    hidden: reduce
-      ? { opacity: 1 }
-      : {
-          opacity: 0,
-          x,
-          y,
-          rotateY: turn,
-          scale: 0.95,
-          filter: "blur(9px)",
-        },
+    hidden: {
+      opacity: 0,
+      x,
+      y,
+      rotateY: turn,
+      scale: 0.95,
+      filter: "blur(9px)",
+    },
     show: {
       opacity: 1,
       x: 0,

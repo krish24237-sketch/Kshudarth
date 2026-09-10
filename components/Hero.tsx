@@ -3,25 +3,27 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 import { BookButton } from "./BookButton";
 import { IconArrowDown } from "./Icons";
 import { TechGrid } from "./TechGrid";
 import { HoverLetters } from "./HoverLetters";
+import { useReducedMotionSafe } from "./useReducedMotionSafe";
 
 const HEAD_LINE_1 = ["You", "create."];
 const HEAD_LINE_2 = ["We", "build"];
 
 export function Hero() {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   // The reveal mask must be clipped while the words rise, but once that's done
   // it has to be released — otherwise it crops the hover lift and glow into a
   // visible rectangle.
-  const [revealed, setRevealed] = useState(!!reduce);
+  const [revealed, setRevealed] = useState(false);
 
   // Masked word reveal — each word rises out from behind its own clip.
+  // Starting states match the server HTML; reduced motion only zeroes timing.
   const word: Variants = {
-    hidden: reduce ? { y: "0%", opacity: 1 } : { y: "110%", opacity: 0 },
+    hidden: { y: "110%", opacity: 0 },
     show: (i: number) => ({
       y: "0%",
       opacity: 1,
@@ -34,7 +36,7 @@ export function Hero() {
   };
 
   const rise = (delay: number) => ({
-    initial: reduce ? { opacity: 1 } : { opacity: 0, y: 22, filter: "blur(8px)" },
+    initial: { opacity: 0, y: 22, filter: "blur(8px)" },
     animate: { opacity: 1, y: 0, filter: "blur(0px)" },
     transition: {
       duration: reduce ? 0 : 0.85,
@@ -59,7 +61,13 @@ export function Hero() {
         className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(75%_60%_at_50%_35%,transparent_0%,rgba(60,18,1,0.55)_100%)]"
       />
 
-      <div className="container-brand flex flex-col items-center text-center">
+      {/* Keyed on the motion setting: hydration has to use the server's animated
+          timing, and framer-motion won't restart a running entrance when only
+          its transition changes. Remounting replays it with zero duration. */}
+      <div
+        key={reduce ? "reduced" : "full"}
+        className="container-brand flex flex-col items-center text-center"
+      >
         {/* Emblem with rotating aura */}
         <motion.div
           {...rise(0)}
@@ -82,13 +90,15 @@ export function Hero() {
           />
           <motion.div
             animate={
-              reduce ? undefined : { y: [0, -9, 0], rotate: [0, 0.6, 0] }
+              reduce
+                ? { y: 0, rotate: 0 }
+                : { y: [0, -9, 0], rotate: [0, 0.6, 0] }
             }
-            transition={{
-              duration: 6.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
+            transition={
+              reduce
+                ? { duration: 0 }
+                : { duration: 6.5, repeat: Infinity, ease: "easeInOut" }
+            }
             className="relative z-10"
           >
             <Image

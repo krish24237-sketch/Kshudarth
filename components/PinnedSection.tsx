@@ -10,12 +10,12 @@ import {
   motion,
   useMotionTemplate,
   useMotionValue,
-  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
   type MotionValue,
 } from "framer-motion";
+import { useReducedMotionSafe } from "./useReducedMotionSafe";
 
 /**
  * Scroll-pinned reveal.
@@ -55,7 +55,7 @@ export function PinnedSection({
   "aria-labelledby"?: string;
 }) {
   const ref = useRef<HTMLElement>(null);
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
 
   const { scrollYProgress } = useScroll({
     target: ref,
