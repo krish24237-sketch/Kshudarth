@@ -1,3 +1,4 @@
+import { founders } from "@/lib/content";
 import { FoundersImage } from "./FoundersImage";
 import { MotionSection } from "./MotionSection";
 
@@ -26,10 +27,7 @@ export function About() {
             </p>
 
             <dl className="mt-9 flex gap-10">
-              {[
-                { name: "Krish", role: "Founder" },
-                { name: "Sneha", role: "Founder" },
-              ].map((f) => (
+              {founders.map((f) => (
                 <div key={f.name}>
                   <dt className="font-cinzel text-2xl font-bold tracking-wide text-copper">
                     {f.name}

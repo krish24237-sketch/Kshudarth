@@ -188,7 +188,21 @@ export const faqs = [
 ] as const;
 
 /**
- * Flip to true once you drop a real photo at /public/founders.jpg.
- * Kept false so Next/Image never requests a missing file (which logs a 404).
+ * The two founders, shown in the About section as a slow crossfade.
+ *
+ * IMPORTANT: both photos must share the same crop and framing (e.g. both
+ * waist-up, same aspect ratio) or the crossfade looks like the person shrinks
+ * mid-transition. Same background and lighting helps too.
+ *
+ * Drop the files in /public/founders/ and set `photo` below. While a photo is
+ * missing the section falls back to a tasteful placeholder.
  */
-export const HAS_FOUNDERS_PHOTO = false;
+export const founders: { name: string; role: string; photo?: string }[] = [
+  // Filenames are case-sensitive on Vercel (Linux) even though Windows ignores
+  // case, so these must match the files in /public/founders/ exactly.
+  { name: "Krish", role: "Founder", photo: "/founders/krish.png" },
+  { name: "Sneha", role: "Founder", photo: "/founders/sneha.png" },
+];
+
+/** Set true once BOTH founder photos are in /public/founders/. */
+export const HAS_FOUNDERS_PHOTO = true;

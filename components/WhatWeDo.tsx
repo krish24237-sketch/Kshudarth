@@ -11,7 +11,7 @@ export function WhatWeDo() {
   return (
     <PinnedSection
       total={services.length}
-      scrollVh={300}
+      scrollVh={210}
       aria-labelledby="whatwedo-heading"
     >
       <PinnedHeader className="mx-auto max-w-2xl text-center">

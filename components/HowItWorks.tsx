@@ -12,7 +12,7 @@ export function HowItWorks() {
     <PinnedSection
       id="how-it-works"
       total={steps.length}
-      scrollVh={220}
+      scrollVh={150}
       aria-labelledby="how-heading"
     >
       <PinnedHeader className="mx-auto max-w-2xl text-center">
