@@ -105,6 +105,24 @@ export const workSamples: WorkSample[] = [
     video: "/work/leaving-a-job.mp4",
     aspect: "vertical",
   },
+  {
+    title: "Egg To Farm",
+    tag: "Poultry brand · AI video",
+    video: "/work/balraj-egg-to-farm.mp4",
+    aspect: "vertical",
+  },
+  {
+    title: "Chick Diary",
+    tag: "Poultry brand · Motion graphics",
+    video: "/work/balraj-chick-diary.mp4",
+    aspect: "vertical",
+  },
+  {
+    title: "Monsoon Care",
+    tag: "Poultry brand · Reel",
+    video: "/work/balraj-monsoon-care.mp4",
+    aspect: "vertical",
+  },
 ];
 
 /**
