@@ -66,6 +66,10 @@ export function TechGrid({ className = "" }: { className?: string }) {
     resize();
     window.addEventListener("resize", resize);
 
+    // Touch devices have no cursor, so the pointer listeners are dead weight —
+    // the ambient waves still run, but nothing hovers.
+    const canHover = window.matchMedia("(hover: hover)").matches;
+
     const parentEl = canvas.parentElement;
     const onMove = (e: MouseEvent) => {
       const rect = canvas.getBoundingClientRect();
@@ -80,8 +84,10 @@ export function TechGrid({ className = "" }: { className?: string }) {
     const onLeave = () => {
       target.current.on = 0;
     };
-    parentEl?.addEventListener("mousemove", onMove);
-    parentEl?.addEventListener("mouseleave", onLeave);
+    if (canHover) {
+      parentEl?.addEventListener("mousemove", onMove);
+      parentEl?.addEventListener("mouseleave", onLeave);
+    }
 
     let intensity = new Float32Array(0);
     let posX = new Float32Array(0);
@@ -212,13 +218,47 @@ export function TechGrid({ className = "" }: { className?: string }) {
         ctx.globalCompositeOperation = "source-over";
       }
 
-      rafRef.current = requestAnimationFrame(tick);
+      // `running` is flipped by the visibility/on-screen sync below.
+      if (running) rafRef.current = requestAnimationFrame(tick);
     };
 
-    rafRef.current = requestAnimationFrame(tick);
+    // The hero is only ~one screen tall, but the loop was painting for the
+    // entire page. On a phone that's a full-time canvas repaint while the user
+    // reads the FAQ. Run only when the hero is actually on screen and the tab
+    // is in the foreground.
+    let running = false;
+    const play = () => {
+      if (running) return;
+      running = true;
+      rafRef.current = requestAnimationFrame(tick);
+    };
+    const stop = () => {
+      running = false;
+      cancelAnimationFrame(rafRef.current);
+    };
+
+    let onScreen = true;
+    const sync = () => {
+      if (onScreen && !document.hidden) play();
+      else stop();
+    };
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        onScreen = entry.isIntersecting;
+        sync();
+      },
+      { threshold: 0 }
+    );
+    if (parentEl) io.observe(parentEl);
+
+    document.addEventListener("visibilitychange", sync);
+    sync();
 
     return () => {
-      cancelAnimationFrame(rafRef.current);
+      stop();
+      io.disconnect();
+      document.removeEventListener("visibilitychange", sync);
       window.removeEventListener("resize", resize);
       parentEl?.removeEventListener("mousemove", onMove);
       parentEl?.removeEventListener("mouseleave", onLeave);

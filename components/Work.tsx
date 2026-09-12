@@ -14,9 +14,17 @@ const ASPECT: Record<string, string> = {
 
 function WorkTile({ sample }: { sample: WorkSample }) {
   const ratio = ASPECT[sample.aspect ?? "vertical"] ?? ASPECT.vertical;
+  const isVertical = (sample.aspect ?? "vertical") !== "wide";
 
   return (
-    <figure className="flex h-full flex-col">
+    // A 9:16 tile at full phone width becomes ~600px tall and swallows the
+    // screen, so vertical reels are capped and centred on mobile only. From
+    // `sm` up the grid takes over and the cap is released.
+    <figure
+      className={`flex h-full flex-col ${
+        isVertical ? "mx-auto w-full max-w-[290px] sm:max-w-none" : ""
+      }`}
+    >
       <div
         className={`group relative ${ratio} w-full overflow-hidden rounded-brand border border-champagne/20 bg-espresso shadow-warm`}
       >
@@ -92,8 +100,11 @@ export function Work() {
           </MotionStagger>
         )}
 
+        {/* One-up on phones: two 9:16 tiles side by side leaves ~155px of
+            width each, which crushes the native video controls into an
+            unusable strip. */}
         {vertical.length > 0 && (
-          <MotionStagger className="mt-6 grid grid-cols-2 gap-5 md:grid-cols-3">
+          <MotionStagger className="mt-6 grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-5 md:grid-cols-3">
             {vertical.map((sample, i) => (
               <MotionItem key={`v-${i}`} index={i}>
                 <WorkTile sample={sample} />

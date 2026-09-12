@@ -2,8 +2,7 @@ import Image from "next/image";
 import { testimonials, type Testimonial } from "@/lib/content";
 import { IconQuote } from "./Icons";
 import { VideoPlayer } from "./VideoPlayer";
-import { MotionSection } from "./MotionSection";
-import { PinnedSection, PinnedHeader, PinnedItem } from "./PinnedSection";
+import { MotionSection, MotionStagger, MotionItem } from "./MotionSection";
 
 /** Small avatar + name + role block, shared by both layouts. */
 function Attribution({ t, large = false }: { t: Testimonial; large?: boolean }) {
@@ -151,26 +150,29 @@ export function Testimonials() {
     );
   }
 
+  // Two or more: same entrance as the Work grid — cards glide in alternating
+  // from left and right with a slight 3D turn. Deliberately NOT scroll-pinned;
+  // pinning here made the section behave differently from Work and added
+  // 210vh of page height for no benefit.
   return (
-    <PinnedSection
-      total={testimonials.length}
-      scrollVh={210}
-      aria-labelledby="testimonials-heading"
-    >
-      <PinnedHeader className="mx-auto max-w-2xl text-center">
-        {heading}
-      </PinnedHeader>
+    <section className="py-14 sm:py-20" aria-labelledby="testimonials-heading">
+      <div className="container-brand">
+        <MotionSection className="mx-auto max-w-2xl text-center">
+          {heading}
+        </MotionSection>
 
-      <div
-        className="mt-10 grid gap-5 md:grid-cols-3"
-        style={{ perspective: 1200 }}
-      >
-        {testimonials.map((t, i) => (
-          <PinnedItem key={`${t.name}-${i}`} index={i}>
-            <TestimonialCard t={t} />
-          </PinnedItem>
-        ))}
+        <MotionStagger
+          className={`mt-10 grid gap-5 ${
+            testimonials.length === 2 ? "md:grid-cols-2" : "md:grid-cols-3"
+          }`}
+        >
+          {testimonials.map((t, i) => (
+            <MotionItem key={`${t.name}-${i}`} index={i}>
+              <TestimonialCard t={t} />
+            </MotionItem>
+          ))}
+        </MotionStagger>
       </div>
-    </PinnedSection>
+    </section>
   );
 }

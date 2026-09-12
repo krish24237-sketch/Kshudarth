@@ -65,6 +65,13 @@ export const testimonials: Testimonial[] = [
     quote:
       "You just give him a general idea, he understands you, and he delivers it within two days. That's the reason we were able to grow our presence so much.",
   },
+  {
+    name: "Prabin",
+    niche: "Founder, Ace Digi Hub",
+    video: "/work/prabin-testimonial.mp4",
+    quote:
+      "We started from scratch and he helped me build the whole thing — the scripting, the content ecosystem, the editing. It's already worked for my business.",
+  },
 ];
 
 /**
