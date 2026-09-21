@@ -123,6 +123,12 @@ export const workSamples: WorkSample[] = [
     video: "/work/balraj-monsoon-care.mp4",
     aspect: "vertical",
   },
+  {
+    title: "Real Estate Video",
+    tag: "Real estate Â· Reel",
+    video: "/work/realestate-video.mp4",
+    aspect: "vertical",
+  },
 ];
 
 /**
